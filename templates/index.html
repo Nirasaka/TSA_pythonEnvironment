@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+	<!-- cssファイルの読み込み -->
+	<link rel="preconnect" href="https://fonts.googleapis.com"> <!-- フォント設定 -->
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+	<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+	<title>『MRを用いたお絵描き水族館』</title>
+</head>
+
+<body>
+	<!-- ヘッダー(共通) -->
+	<header>
+		<img src="{{ url_for('static', filename='images/logo.png') }}" alt="サイトロゴ" />
+		<nav>
+			<b class="bblue">『MRを用いたお絵描き水族館』</b>
+		</nav>
+	</header>
+	<!-- ページ上部へ -->
+	<a class="pagetop" href="#">
+		<div class="pagetop__arrow"></div>
+	</a>
+	<!-- メイン部分 -->
+	<div class="main">
+		<h1 class="heading-31" id="start">はじめに</h1>
+		<div class="calammain">
+			<div class="calam1">
+				<p>
+					本サイトは『MRを用いたお絵描き水族館』の操作ページになっております．<br>
+					詳しい使い方は<b class="bgreen">Visual Computing研究室のスタッフ</b>にお尋ねください！
+				</p>
+			</div>
+			<div class="calam2">
+				<img src="{{ url_for('static', filename='images/logo.png') }}" class="calamimg" alt="ロゴ" />
+			</div>
+		</div>
+
+		<!-----------------------------ペイントソフト----------------------------->
+		<h1 class="heading-31" id="paint">ペイントソフト</h1>
+		<p>最初に魚を描く場合はペイントソフトを起動してください．</p>
+		<a href="http://127.0.0.1:5000/paint" class="btn_18">ペイントソフト起動</a>
+
+		<br>
+		<h1 class="heading-31" id="result">生成結果</h1>
+		<p>
+			絵を描いたあとはもう一度本ページを読み込んでください．正しく反映されている場合は下に画像が表示されます．
+		</p>
+		<!-- 画像表示場所 -->
+		<div class="calammain">
+			<div class="calam1-1">
+				<h2>ペイントソフトで描かれた絵</h2>
+				<img src="{{ url_for('static', filename='images/paint.png') }}" alt="エラーコード:404" class="calamimg" />
+			</div>
+
+			<div class="calam1-1">
+				<h2>最新の魚</h2>
+				<img src="{{ url_for('static', filename='images/new.png') }}" alt="エラーコード:404" class="calamimg" />
+			</div>
+		</div>
+
+		<!-----------------------------カメラ----------------------------->
+		<h1 class="heading-31" id="camera">カメラ</h1>
+		<p>用紙に記入した場合はカメラからデータを取り込んでください！</p>
+		<a href="http://127.0.0.1:5000/camera" class="btn_18">カメラ起動</a>
+
+		<!-----------------------------魚の生成結果を返す----------------------------->
+		<h1 class="heading-31" id="paint">生成結果</h1>
+		<p>
+			生成結果を返します．<br>
+
+			<a href="http://127.0.0.1:5000/download">
+				<button type="button" class="button">魚を生成</button>
+			</a>
+		</p>
+
+
+		<!-----------------------------エラーコード----------------------------->
+		<h1 class="heading-31" id="paint">エラーコード</h1>
+		<p>
+			[エラーコード:404]->正しく画像を読み込むことができませんでした．本ページを再読み込みしてください．それでも表示される場合はペイントソフトで描かれていない・魚を生成していない可能性があります．
+		</p>
+
+		<!-----------------------------アプリの再起動----------------------------->
+		<h1 class="heading-31" id="paint">アプリの再起動</h1>
+		<p>
+			下記のボタンをクリックするとアプリが再起動されます．
+			<a href="http://127.0.0.1:5000/reset" class="btn_18">再起動</a>
+		</p>
+
+		<!-----------------------------シャットダウン----------------------------->
+		<h1 class="heading-31" id="paint">アプリを停止</h1>
+		<p>
+			下記のボタンをクリックするとアプリが停止されます．
+			<a href="http://127.0.0.1:5000/shutdown" class="btn_18">停止</a>
+		</p>
+
+
+		<footer>
+			<p><small>&copy;2024-2025&nbsp;Visual Computing Laboratory-ATDigital-</small></p>
+		</footer>
+	</div>
+</body>
+
+</html>
