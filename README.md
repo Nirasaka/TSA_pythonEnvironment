@@ -1,1 +1,2 @@
 ThirdSketchAquariumのpythonサーバ
+UnityデータはThirdSketchAquariumにある
