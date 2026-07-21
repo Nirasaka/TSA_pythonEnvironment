@@ -24,6 +24,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 is_sever_shutdown = False       # サーバーのシャットダウンフラグ
 is_painttool_running = False    # ペイントツールが起動中かどうかのフラグ
 server_fish_store = []          # サーバで管理している魚のハッシュリスト
+default_fish_list = []          # デフォルトでいる魚のリスト
 
 @app.route('/')
 def index():
@@ -123,16 +124,20 @@ def uploadFish():
     client_fish_list = data["fish_list"]
     # print(client_fish_list)
 
-    if server_fish_store == []:
-        return {}, 204
+    return newFish(client_fish_list)
 
+@app.route('/download/new',methods=['GET'])
+def newFish(client_fish_list=[]):
+    if server_fish_store == []:
+        return jsonify({"error": "Server has no fish"}), 404
+    
     for file_name in reversed(server_fish_store):
         if not file_name in client_fish_list:
             zip_path = f"./upload/{file_name}.zip"
 
             if not os.path.exists(zip_path):
                 server_fish_store.remove(file_name)
-                return {}, 204
+                continue
 
             return send_file(
                 zip_path,
@@ -143,7 +148,8 @@ def uploadFish():
 
     #? 新しい魚がいない
     return {}, 204
-
+        
+    
 
 
 @app.route('/paint')
@@ -169,6 +175,11 @@ def launchPaintTool():
 
 
 #! 接続確認
+@app.route('/download/defaultlist', methods=['GET'])
+def sendDefaultList():
+    data = {"defaultlist":default_fish_list}
+    return jsonify(data)
+
 @app.route('/hello', methods=['GET'])
 def hello():
     return {}, 200
@@ -216,17 +227,24 @@ def runServer():
 
 #! 生成されている魚を取得する初期化
 def initServer():
-    module.printTerminal("初期化：生成済みの魚を取得")
+    module.printTerminal("初期化：生成済みの魚を取得(”*”はデフォルト)")
+    global server_fish_store, default_fish_list
 
     # 検索したいフォルダのパス
     folder_path = Path(r"./upload")
 
     # フォルダ内のzipファイルを取得
-    zip_names = [p.stem for p in folder_path.rglob("*.zip")]
+    server_fish_store = [p.stem for p in folder_path.rglob("*.zip")].copy()
+
+    # デフォルトの魚を取得
+    folder_path = Path(r"./defaultfish")
+
+    default_fish_list = [p.stem for p in folder_path.rglob("*.zip")].copy()
 
     # 表示
-    for zip_name in zip_names:
-        server_fish_store.append(zip_name)
+    for zip_name in server_fish_store:
+        if zip_name in default_fish_list:
+            zip_name += "*"
         print(zip_name)
 
 
