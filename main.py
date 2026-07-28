@@ -299,7 +299,6 @@ def runServer():
 
 #! 生成されている魚を取得する初期化
 def initServer():
-    module.printTerminal("初期化：生成済みの魚を取得(”*”はデフォルト)")
     global server_fish_store, default_fish_list
 
     # 検索したいフォルダのパス
@@ -312,6 +311,21 @@ def initServer():
     folder_path = Path(r"./defaultfish")
 
     default_fish_list = [p.stem for p in folder_path.rglob("*.zip")].copy()
+
+    for zip_name in default_fish_list:
+        if zip_name not in server_fish_store:
+            src = os.path.join("./defaultfish", zip_name + ".zip")
+            dst = os.path.join("./upload", zip_name + ".zip")
+            shutil.copy2(src, dst)
+            #print("デフォルトの魚をコピーしました：" + zip_name)
+
+    module.printTerminal("初期化：生成済みの魚を取得(”*”はデフォルト)")
+    
+    # 検索したいフォルダのパス
+    folder_path = Path(r"./upload")
+
+    # フォルダ内のzipファイルを取得
+    server_fish_store = [p.stem for p in folder_path.rglob("*.zip")].copy()
 
     # 表示
     for zip_name in server_fish_store:
