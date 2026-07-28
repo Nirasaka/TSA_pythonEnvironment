@@ -5,6 +5,10 @@ import os
 from colorama import Fore, Back, Style
 import zipfile
 from pathlib import Path
+import cv2
+import numpy as np
+import hashlib
+import shutil
 
 from function import painttool as paint  # ペイントツール
 from function import module # 共通するモジュール
@@ -25,6 +29,7 @@ is_sever_shutdown = False       # サーバーのシャットダウンフラグ
 is_painttool_running = False    # ペイントツールが起動中かどうかのフラグ
 server_fish_store = []          # サーバで管理している魚のハッシュリスト
 default_fish_list = []          # デフォルトでいる魚のリスト
+generation_queue = []           # 生成待ちのキュー
 
 @app.route('/')
 def index():
@@ -149,7 +154,6 @@ def newFish(client_fish_list=[]):
     #? 新しい魚がいない
     return {}, 204
         
-    
 
 
 @app.route('/paint')
@@ -162,7 +166,6 @@ def pushedPaintButton():
     
     return redirect(url_for('index'))
 
-
 #! ペイントツールを起動
 def launchPaintTool():
     global is_painttool_running, generation_queue
@@ -172,6 +175,52 @@ def launchPaintTool():
     generateFish(file_name)
 
     server_fish_store.append(file_name)
+
+#! ペイントツールアプリから来た画像を処理して返す
+@app.route('/checkimg', methods=['POST'])
+def checkImg():
+    if "image" not in request.files:
+        return "No image", 400
+
+    file = request.files["image"]
+
+    path = os.path.join("./tmp", file.filename)
+
+    file.save(path)
+
+    processedImg = extraction_fish.findFishParts(path,file.filename, saveOption=False)
+
+    path = os.path.join("./tmp", "processed_" + file.filename)
+    
+    cv2.imwrite(path, processedImg)
+
+    return send_file(path, mimetype="image/png")
+
+#! ペイントツールアプリから来た確認が取れた画像を生成待ちキューに入れる
+@app.route('/addqueue', methods=['POST'])
+def addQueue():
+    global generation_queue
+    
+    if "image" not in request.files:
+        return "No image", 400
+
+    file = request.files["image"]
+
+    img = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
+
+    if img is None:
+        return "Decode Error", 400
+    
+    file_name = hashlib.sha256(img).hexdigest()
+
+    path = "./inputimg/" + file_name + ".png"
+
+    cv2.imwrite(path, img)
+
+    print(file_name)
+    generation_queue.insert(0, file_name)
+
+    return {}, 200
 
 
 #! 接続確認
@@ -194,7 +243,30 @@ def shutdown():
     """
     global is_sever_shutdown
     module.printTerminal("シャットダウンします")
+
+    clearFolder("./tmp")
+
     is_sever_shutdown = True
+
+#! フォルダ内をすべて消す
+def clearFolder(folder):
+    print("フォルダをクリーンアップ：" + folder)
+
+    if not os.path.exists(folder):
+        print("フォルダがありません")
+        return
+
+    for name in os.listdir(folder):
+        path = os.path.join(folder, name)
+
+        try:
+            if os.path.isfile(path) or os.path.islink(path):
+                os.remove(path)
+            elif os.path.isdir(path):
+                shutil.rmtree(path)
+        except Exception as e:
+            print(f"削除できませんでした: {path}")
+            print(e)
 
 #! flaskサーバを別スレッドで起動
 def runServer():
@@ -259,6 +331,9 @@ if __name__ == '__main__':
             if is_painttool_running:
                 launchPaintTool()
                 is_painttool_running = False
+            if generation_queue:
+                generateFish(generation_queue.pop())
 
     except KeyboardInterrupt:
         print('Ctrl + C によって終了します')
+        clearFolder("./tmp")

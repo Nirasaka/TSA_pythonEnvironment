@@ -123,7 +123,7 @@ def findNarrowestPointAfter(contour, start_x):
     return split_x
 
 
-def findFishParts(imgPath, filename):
+def findFishParts(imgPath, filename, saveOption = True):
     """画像から魚のパーツを推定する
 
     Args:
@@ -141,8 +141,9 @@ def findFishParts(imgPath, filename):
     img_cut,img_alpha_normalized ,= contourDetection(imgPath, filename)
 
     # 結果を保存
-    cv2.imwrite("./output/onlyfish/only" + filename + ".png", img_cut)
-    cv2.imwrite("./output/onlyfish/normalized_" + filename + ".png", img_alpha_normalized)
+    if saveOption:
+        cv2.imwrite("./output/onlyfish/only" + filename + ".png", img_cut)
+        cv2.imwrite("./output/onlyfish/normalized_" + filename + ".png", img_alpha_normalized)
 
     return img_cut
 
