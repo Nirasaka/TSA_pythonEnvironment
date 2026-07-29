@@ -346,7 +346,9 @@ if __name__ == '__main__':
                 launchPaintTool()
                 is_painttool_running = False
             if generation_queue:
-                generateFish(generation_queue.pop())
+                file_name = generation_queue.pop()
+                generateFish(file_name)
+                server_fish_store.append(file_name)
 
     except KeyboardInterrupt:
         print('Ctrl + C によって終了します')
