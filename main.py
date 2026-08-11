@@ -245,8 +245,11 @@ def shutdown():
     module.printTerminal("シャットダウンします")
 
     clearFolder("./tmp")
+    clearFolder("./upload")
 
     is_sever_shutdown = True
+
+    return {"シャットダウンしました"}
 
 #! フォルダ内をすべて消す
 def clearFolder(folder):
@@ -352,4 +355,4 @@ if __name__ == '__main__':
 
     except KeyboardInterrupt:
         print('Ctrl + C によって終了します')
-        clearFolder("./tmp")
+        shutdown()

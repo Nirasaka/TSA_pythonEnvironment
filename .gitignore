@@ -6,3 +6,5 @@ output/
 inputimg/
 build/
 dist/
+
+/tmp/
