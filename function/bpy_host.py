@@ -1,6 +1,7 @@
 import bpy 
 from function import bpy_outline_from_mask
 from function import bpy_create_model
+from function import bpy_insert_bone
 import os
 
 def clear_scene():
@@ -60,7 +61,7 @@ def main(file_name, save_path = r"./output/"):
 
     no_born_model = bpy_create_model.main(outline_model, file_name, ratio)
 
-
+    bpy_insert_bone.main(no_born_model, file_name)
 
     # 任意で.blendとして保存
     if save_path:
