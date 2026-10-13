@@ -14,8 +14,7 @@ from function import painttool as paint  # ペイントツール
 from function import module # 共通するモジュール
 from function import settimer  # 時間測定
 from function import extraction_fish  # さかなの輪郭を使った処理(抽出・部位推定)
-from function import createobj as obj  # 3DOBJを作る
-from function import create_armature as ca    # ボーンを生成する
+from function import bpy_host  # 3DOBJを作る
 
 app = Flask(__name__)
 
@@ -58,7 +57,6 @@ def generateFish(file_name):
 
     filePath = "./inputimg/" + file_name + ".png"
     img = extraction_fish.findFishParts(filePath, file_name)
-    import cv2
     cv2.imwrite("./static/images/new.png", img)
 
     preproTimer.stop()
@@ -70,26 +68,9 @@ def generateFish(file_name):
     
     createTimer = settimer.timer("-->create-Timer")
 
-    filePath = "./output/mask/" + file_name + "_mask3.png"
-    maskPath = "./output/mask/" + file_name + "_mask3.png"
-    obj.creating3D(filePath, maskPath, file_name, 100, False)
-    
-    meshpath = "./output/mesh/me_" + file_name + ".obj"
-    
+    bpy_host.main(file_name)
+
     createTimer.stop()
-
-    # ? ------------------------------------------------------
-    # ? ボーンを生成
-    # ? ------------------------------------------------------
-    module.printTerminal("ボーンを生成(ついでにUV展開)", 2)
-
-    bornTimer = settimer.timer("-->born-Timer")
-
-    ca.main(meshpath, file_name)
-
-    fbxpath = "./output/fbx/fbx_" + file_name + ".fbx"
-
-    bornTimer.stop()
 
     # ? ------------------------------------------------------
     # ? サーバの魚辞書に登録

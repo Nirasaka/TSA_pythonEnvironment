@@ -69,25 +69,25 @@ def main(file_name, save_path = r"./output/"):
         print(f"[保存完了] Blendを書き出しました： {save_path}blend/blend_{file_name}.blend")
 
     #FBX出力
-    # if save_path:
-    #     # 全オブジェクト選択
-    #     bpy.ops.object.select_all(action='SELECT')
+    if save_path:
+        # 全オブジェクト選択
+        bpy.ops.object.select_all(action='SELECT')
 
-    #     # スケールと位置を適用（トランスフォーム適用）
-    #     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+        # スケールと位置を適用（トランスフォーム適用）
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
         
-    #     # エクスポート
-    #     bpy.ops.export_scene.fbx(
-    #         filepath=save_path + f"fbx/fbx_{file_name}.fbx",
-    #         use_selection=True,              # 選択オブジェクトのみ
-    #         apply_unit_scale=True,           # FBX単位スケールを適用
-    #         apply_scale_options='FBX_SCALE_ALL',  # Unityに合わせたスケーリング
-    #         object_types={'MESH', 'ARMATURE'},    # メッシュとアーマチュアのみ
-    #         bake_space_transform=True,       # トランスフォームを焼き付け（Unityとの軸合わせ）
-    #         add_leaf_bones=False,            # Unityと互換性のためにLeafボーンを無効
-    #         armature_nodetype='NULL',        # Unity互換のノードタイプ
-    #         axis_forward='-Z',               # Unityの前方（-Z）
-    #         axis_up='Y'                      # Unityの上方向（Y）
-    #     )
+        # エクスポート
+        bpy.ops.export_scene.fbx(
+            filepath=save_path + f"fbx/fbx_{file_name}.fbx",
+            use_selection=True,              # 選択オブジェクトのみ
+            apply_unit_scale=True,           # FBX単位スケールを適用
+            apply_scale_options='FBX_SCALE_ALL',  # Unityに合わせたスケーリング
+            object_types={'MESH', 'ARMATURE'},    # メッシュとアーマチュアのみ
+            bake_space_transform=True,       # トランスフォームを焼き付け（Unityとの軸合わせ）
+            add_leaf_bones=False,            # Unityと互換性のためにLeafボーンを無効
+            armature_nodetype='NULL',        # Unity互換のノードタイプ
+            axis_forward='-Z',               # Unityの前方（-Z）
+            axis_up='Y'                      # Unityの上方向（Y）
+        )
 
-        # print(f"[完了] FBXを書き出しました：{save_path}fbx/fbx_{file_name}.fbx")
+        print(f"[完了] FBXを書き出しました：{save_path}fbx/fbx_{file_name}.fbx")
