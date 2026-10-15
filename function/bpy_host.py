@@ -65,7 +65,7 @@ def main(file_name, save_path = r"./output/"):
 
     # 任意で.blendとして保存
     if save_path:
-        bpy.ops.wm.save_as_mainfile(filepath=save_path + f"blend/blend_{file_name}_test.blend")
+        bpy.ops.wm.save_as_mainfile(filepath=save_path + f"blend/blend_{file_name}.blend")
         print(f"[保存完了] Blendを書き出しました： {save_path}blend/blend_{file_name}.blend")
 
     #FBX出力

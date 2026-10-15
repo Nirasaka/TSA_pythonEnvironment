@@ -130,7 +130,7 @@ def fill_concave_with_grid(obj, grid_size=0.005):
     bm.to_mesh(obj.data)
     bm.free()
 
-def thickening(obj, thickness=0.03, proportion_size=0.06, buffer=0.001):
+def thickening(obj, thickness=0.03, proportion_size=0.06, buffer=0.0006):
     bpy.context.view_layer.objects.active = obj
     obj.select_set(True)
     
@@ -150,7 +150,7 @@ def thickening(obj, thickness=0.03, proportion_size=0.06, buffer=0.001):
     
     # プロポーショナル編集適用（シャープ，サイズ0.03，接続あり）で +y 方向に移動
     bpy.ops.transform.translate(
-        value=(0, thickness-buffer, 0),
+        value=(0, thickness, 0),
         use_proportional_edit=True,
         proportional_edit_falloff='SHARP',
         proportional_size=proportion_size,
@@ -182,27 +182,14 @@ def thickening(obj, thickness=0.03, proportion_size=0.06, buffer=0.001):
         for v, co in new_coords.items():
             v.co = co
 
+    # y0に近すぎる頂点をクランプ
+    for v in bm.verts:
+        if not v.is_boundary:
+            if v.co.y > -buffer:
+                v.co.y = -buffer
+
     bm.to_mesh(obj.data)
     bm.free()
-
-    bpy.ops.object.mode_set(mode='EDIT')
-    bm_edit = bmesh.from_edit_mesh(obj.data)
-    bm_edit.edges.ensure_lookup_table()
-    
-    # 境界の「辺」を取得
-    boundary_edges = [e for e in bm_edit.edges if e.is_boundary]
-        
-    # 辺を押し出してメッシュ（面）を構成する
-    extrude_ret = bmesh.ops.extrude_edge_only(bm_edit, edges=boundary_edges)
-    extruded_verts = [v for v in extrude_ret['geom'] if isinstance(v, bmesh.types.BMVert)]
-    
-    # 押し出したバッファ頂点を確実に y = 0 に揃える
-    for v in extruded_verts:
-        v.co.y = 0.0
-
-    bmesh.update_edit_mesh(obj.data)
-
-    bpy.ops.object.mode_set(mode='OBJECT')
 
 
     # モディファイアを新規追加

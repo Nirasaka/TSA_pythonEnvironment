@@ -16,7 +16,7 @@ def calculate_dynamic_resolution(img, ratio = 1.0, base_resolution=150):
         dynamic_res = min(dynamic_res, 600)
     else:
         dynamic_res = base_resolution
-
+    print(dynamic_res)
     return dynamic_res
 
 def create_outline_from_mask(img, obj_name="MaskOutline", ratio = 1.0, resolution=150, physical_size=0.3, smooth_repeat=10, smooth_factor=0.5):
@@ -29,7 +29,7 @@ def create_outline_from_mask(img, obj_name="MaskOutline", ratio = 1.0, resolutio
     smooth_factor : スムージング強度
     """
 
-    resolution = calculate_dynamic_resolution(img,ratio)
+    resolution = calculate_dynamic_resolution(img,ratio,resolution)
     
     width, height = img.size
     if width == 0 or height == 0:
@@ -141,7 +141,7 @@ def main(img, file_name, ratio, isOutput = False):
             img = img, 
             obj_name="me_" + file_name, 
             ratio = ratio,
-            resolution=150, 
+            resolution=200, 
             physical_size=0.32,
             smooth_repeat=10,  # リピート回数 10
             smooth_factor=0.5  # スムージング係数 0.5
