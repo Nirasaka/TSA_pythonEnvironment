@@ -212,6 +212,8 @@ def thickening(obj, thickness=0.03, proportion_size=0.06, buffer=0.0006):
     bpy.ops.object.mode_set(mode='EDIT')
     bpy.ops.mesh.select_all(action='SELECT')
     bpy.ops.mesh.dissolve_limited(use_dissolve_boundaries=True)
+    bpy.ops.mesh.dissolve_degenerate()
+
     bpy.ops.object.mode_set(mode='OBJECT')
 
 

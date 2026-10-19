@@ -42,10 +42,6 @@ def index():
 
 #! 魚生成
 def generateFish(file_name):
-    if os.path.exists(f"./upload/{file_name}.zip"):
-        module.printTerminal("既に生成されているモデルです：" + file_name, 3)
-        return
-
     module.printTerminal("魚を生成")
     print(file_name)
 
@@ -56,6 +52,10 @@ def generateFish(file_name):
     preproTimer = settimer.timer("-->Preprocessing-Timer")
 
     filePath = "./inputimg/" + file_name + ".png"
+    if not os.path.exists(filePath):
+        module.printTerminal("入力画像が見つかりませんでした：" + file_name, 3)
+        return
+    
     img = extraction_fish.findFishParts(filePath, file_name)
     cv2.imwrite("./static/images/new.png", img)
 
@@ -149,7 +149,6 @@ def pushedPaintButton():
 
 #! ペイントツールを起動
 def launchPaintTool():
-    global is_painttool_running, generation_queue
     module.printTerminal("ペイントツールを起動します")
     
     file_name = paint.main()
@@ -331,7 +330,11 @@ if __name__ == '__main__':
                 is_painttool_running = False
             if generation_queue:
                 file_name = generation_queue.pop()
-                generateFish(file_name)
+                
+                if os.path.exists(f"./upload/{file_name}.zip"):
+                    module.printTerminal("既に生成されているモデルです：" + file_name, 3)
+                else:
+                    generateFish(file_name)
                 server_fish_store.append(file_name)
 
     except KeyboardInterrupt:

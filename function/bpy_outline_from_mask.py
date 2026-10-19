@@ -3,7 +3,7 @@ import bmesh
 from mathutils import Vector
 import os
 
-def calculate_dynamic_resolution(img, ratio = 1.0, base_resolution=150):
+def calculate_dynamic_resolution(img, ratio, base_resolution):
     """
     マスク画像の横幅と白領域のサイズを考慮し、白領域が画像の横幅の半分(0.5)に満たない場合、少しずつ増大
     """
@@ -13,16 +13,17 @@ def calculate_dynamic_resolution(img, ratio = 1.0, base_resolution=150):
         multiplier = 0.8 / max(ratio, 0.05)
         dynamic_res = int(base_resolution * multiplier)
         # あまりに大きくなりすぎて処理が重くなるのを防ぐための上限を設定
-        dynamic_res = min(dynamic_res, 600)
+        dynamic_res = min(dynamic_res, 700)
     else:
         dynamic_res = base_resolution
-    print(dynamic_res)
+    print("サンプリング解像度：" + str(dynamic_res))
     return dynamic_res
 
 def create_outline_from_mask(img, obj_name="MaskOutline", ratio = 1.0, resolution=150, physical_size=0.3, smooth_repeat=10, smooth_factor=0.5):
     """
     img : 画像
     obj_name : 出力モデルの名前
+    ratio : マスク画像の横幅に対する白領域の横幅の割合
     resolution : 画像のサンプリング解像度（大きいほど計算量が増大，マスクの白部分が画像の横幅の半分に満たない場合は増幅される）
     physical_size : 画像一辺（x方向）を3D空間上でどれくらいの大きさととらえるか（メートル単位）
     smooth_repeat : 輪郭頂点に適用するスムージングのリピート数（大きいほど滑らか）
@@ -141,7 +142,7 @@ def main(img, file_name, ratio, isOutput = False):
             img = img, 
             obj_name="me_" + file_name, 
             ratio = ratio,
-            resolution=200, 
+            resolution=450, 
             physical_size=0.32,
             smooth_repeat=10,  # リピート回数 10
             smooth_factor=0.5  # スムージング係数 0.5
