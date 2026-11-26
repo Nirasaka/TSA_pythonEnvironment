@@ -37,10 +37,21 @@ def calculate_dynamic_white_width(img):
     ratio = white_width / width # 画像の横幅に対する白領域の割合 (0.0 ~ 1.0)
     return ratio
 
+def calculate_dynamic_scale(ratio, base_value, min_ratio=0.25):
+    if ratio >= 0.5:
+        return base_value
+
+    scale = 2.0 * ratio
+    
+    scale = max(min(scale, 2.0), min_ratio)
+    
+    dynamic_value = base_value * scale
+    return dynamic_value
+
 def main(file_name, save_path = r"./output/"):
     clear_scene()
     # print(os.path.dirname(os.path.realpath(__file__)))
-    mask_path = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), r"../output/mask/" + file_name + "_mask3.png"))
+    mask_path = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), r"../output/mask/" + file_name + "_mask.png"))
 
     loaded_img = bpy.data.images.load(mask_path, check_existing=True)
     target_image_name = loaded_img.name

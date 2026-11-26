@@ -16,7 +16,7 @@ def create_material(obj: bpy.types.Object, imgName):
     texture_node.name = "texture"
 
     # print("テクスチャをロード：" + os.getcwd() + "/output/onlyfish/normalized_" + imgName + ".png")
-    texture_node.image = bpy.data.images.load(os.getcwd() + "/output/onlyfish/normalized_" + imgName + ".png")
+    texture_node.image = bpy.data.images.load(os.getcwd() + "/output/onlyfish/" + imgName + ".png")
 
     # プリンシプルBSDF
     bsdf = next((n for n in nodes if n.type == 'BSDF_PRINCIPLED'), None)
@@ -158,7 +158,7 @@ def insert_bones_and_bind(obj: bpy.types.Object):
 # --- OBJファイルの読み込みと処理 ---
 def main(obj, file_name):
     # UV展開
-    deploy_uv(obj)
+    #deploy_uv(obj)
 
     # マテリアル適用
     create_material(obj, file_name)

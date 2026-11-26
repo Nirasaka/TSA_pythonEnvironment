@@ -45,18 +45,24 @@ def generateFish(file_name):
     module.printTerminal("魚を生成")
     print(file_name)
 
+    filePath = "./inputimg/" + file_name + ".png"
+    if not os.path.exists(filePath):
+        module.printTerminal("入力画像が見つかりませんでした：" + file_name, 3)
+        return
+
     #? ------------------------------------------------------
     #? 画像から魚抽出->輪郭抽出
     #? ------------------------------------------------------
     module.printTerminal("画像から魚を抽出",2)
     preproTimer = settimer.timer("-->Preprocessing-Timer")
-
-    filePath = "./inputimg/" + file_name + ".png"
-    if not os.path.exists(filePath):
-        module.printTerminal("入力画像が見つかりませんでした：" + file_name, 3)
-        return
     
-    img = extraction_fish.findFishParts(filePath, file_name)
+    img = cv2.imread(filePath, cv2.IMREAD_UNCHANGED)
+    alpha = img[:, :, 3]
+    mask = (alpha > 0).astype("uint8") * 255
+    cv2.imwrite(r"./output/mask/" + file_name + "_mask.png", mask)
+
+    dilated_img = DilateImage(img)
+    cv2.imwrite(r"./output/onlyfish/" + file_name + ".png", dilated_img)
     cv2.imwrite("./static/images/new.png", img)
 
     preproTimer.stop()
@@ -80,12 +86,35 @@ def generateFish(file_name):
 
     module.printTerminal("モデルの生成が終了しました：" + file_name, 2)
 
+def DilateImage(img, iterations=1):
+    if img is None or img.shape[2] != 4:
+        print("エラー: 4チャンネル(BGRA)の画像を入力してください。")
+        return img
+
+    bgr = img[:, :, :3].copy()
+    alpha = img[:, :, 3].copy()
+
+    kernel = np.ones((3, 3), np.uint8)
+
+    for _ in range(iterations):
+        dilated_alpha = cv2.dilate(alpha, kernel, iterations=1)
+        
+        fill_mask = np.where(alpha == 0, 255, 0).astype(np.uint8)
+        if np.all(fill_mask == 0):
+            break
+            
+        bgr = cv2.inpaint(bgr, fill_mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA)
+        alpha = dilated_alpha
+
+    result = np.dstack((bgr, alpha))
+    return result
+
 #! 魚をZIP化する
 def zipFish(file_name):
     """魚をZIP化します"""
     # パスを取得
     fbx_path = f"./output/fbx/fbx_{file_name}.fbx"
-    png_path = f"./output/onlyfish/normalized_{file_name}.png"
+    png_path = f"./output/onlyfish/{file_name}.png"
     zipPath = f"./upload/{file_name}.zip"
     
     # 情報をターミナルに出力
